@@ -19,7 +19,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install -y build-essential git openjdk-17-jdk python3-pip unzip
+          sudo apt install -y build-essential git openjdk-17-jdk python3-pip unzip wget
           pip install buildozer cython
 
       - name: Install Android SDK
@@ -28,22 +28,18 @@ jobs:
           cd /usr/lib/android-sdk/cmdline-tools
           sudo wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip -O cmdline-tools.zip
           sudo unzip cmdline-tools.zip
-          sudo mkdir latest
-          sudo mv cmdline-tools latest/
+          sudo mv cmdline-tools latest
           export ANDROID_HOME=/usr/lib/android-sdk
-          export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH
+          export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$PATH
           yes | sdkmanager --licenses
-          sdkmanager "platform-tools" "platforms;android-33" "build-tools;33.0.2"
+          sdkmanager "platform-tools" "platforms;android-30" "build-tools;30.0.3"
 
       - name: Build APK
         run: |
-          export ANDROID_HOME=/usr/lib/android-sdk
-          export PATH=$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$PATH
           buildozer android debug
 
       - name: Upload APK
-  uses: actions/upload-artifact@v4
-  with:
-    name: myapp-apk
-    path: bin/*.apk
-
+        uses: actions/upload-artifact@v3
+        with:
+          name: myapp-apk
+          path: bin/*.apk
